@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quarks: The Building Blocks of Matter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Neutrals -->
+    <!-- Application Structure Plan: The SPA is designed as a guided learning journey, starting with a broad analogy and progressively focusing on details. It begins with the interactive "Russian Doll" analogy to establish the core concept of nested particles. It then introduces the key components ("Up" and "Down" quarks). The centerpiece is the "Particle Builder," a hands-on sandbox where students actively construct protons and neutrons, which is more engaging than a static explanation. The concept of "Gluons" is integrated as a visual reward within the builder. A final quiz reinforces learning. This step-by-step, interactive structure is chosen to make an abstract physics topic accessible and engaging for mixed-ability ESL students, prioritizing active participation over passive reading. -->
+    <!-- Visualization & Content Choices: 1. Russian Doll Analogy -> Goal: Inform Hierarchy -> Viz: Clickable, layered images -> Interaction: User clicks to "open" the doll, revealing smaller components -> Justification: Provides a tangible, visual metaphor for the abstract concept of subatomic particles. | 2. Quark Introduction -> Goal: Inform Components -> Viz: Styled HTML cards -> Interaction: A toggle reveals the "full family" of quarks -> Justification: Clearly presents the main building blocks without overwhelming students, offering extra info for those curious. | 3. Particle Builder -> Goal: Organize & Create -> Viz: Draggable HTML elements in a dropzone -> Interaction: Drag-and-drop quarks to form particles with real-time feedback -> Justification: Kinesthetic learning; turns abstract composition rules into a concrete, game-like activity. | 4. Gluon Explanation -> Goal: Explain a Force -> Viz: CSS animation/effect on successful particle creation -> Interaction: Automatic visual feedback -> Justification: Connects the concept of the strong force directly to the student's successful creation. | 5. Quiz -> Goal: Assess -> Viz: Interactive multiple-choice questions -> Interaction: Click to answer with immediate feedback -> Justification: Reinforces key lesson objectives. | 6. Assignment -> Goal: Apply knowledge -> Viz: Text-based instructions and a prompt -> Interaction: No direct interaction, but guides external research and writing -> Justification: Gives students a concrete task to demonstrate mastery beyond simple quiz questions. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFDF6;
+            color: #383838;
+        }
+        .russian-doll-container {
+            cursor: pointer;
+            transition: transform 0.3s ease-in-out;
+        }
+        .russian-doll-container:hover {
+            transform: scale(1.05);
+        }
+        .quark-card, .builder-quark {
+            touch-action: none;
+        }
+        .drop-zone {
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .drop-zone-active {
+            background-color: #E3F2FD;
+            box-shadow: 0 0 0 4px #90CAF9;
+        }
+        .builder-quark {
+            cursor: grab;
+        }
+        .builder-quark:active {
+            cursor: grabbing;
+        }
+        .feedback-correct {
+            color: #2E7D32;
+        }
+        .feedback-incorrect {
+            color: #C62828;
+        }
+        .gluon-effect {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 179, 0, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(255, 179, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 179, 0, 0); }
+        }
+        .hidden-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        .visible-content {
+            display: block;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <nav class="bg-white/70 backdrop-blur-lg sticky top-0 z-50 border-b border-gray-200">
+        <div class="max-w-5xl mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <span class="text-xl font-bold text-gray-800">Quark Explorer</span>
+                <div class="hidden sm:flex sm:space-x-8">
+                    <a href="#intro" class="text-gray-600 hover:text-blue-600 transition-colors">Introduction</a>
+                    <a href="#quarks" class="text-gray-600 hover:text-blue-600 transition-colors">Meet the Quarks</a>
+                    <a href="#builder" class="text-gray-600 hover:text-blue-600 transition-colors">Particle Builder</a>
+                    <a href="#quiz" class="text-gray-600 hover:text-blue-600 transition-colors">Quiz</a>
+                    <a href="#assignment" class="text-gray-600 hover:text-blue-600 transition-colors">Assignment</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-5xl mx-auto p-4 md:p-8 space-y-24">
+        
+        <section id="intro" class="text-center scroll-mt-20">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">What is Everything Made Of?</h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto mb-8">
+                Everything you see is made of tiny pieces, nested inside each other like Russian dolls. Click the doll below to see how deep it goes and discover the smallest building blocks of our universe.
+            </p>
+            <div id="doll-container" class="relative w-64 h-96 md:w-80 md:h-120 mx-auto russian-doll-container">
+                 <img id="doll-image" src="https://placehold.co/320x480/A8DADC/1D3557?text=Nesting+Doll" alt="Russian Doll representing an Atom" class="w-full h-full object-contain rounded-lg shadow-lg">
+                 <div id="doll-caption" class="mt-4 text-xl font-semibold text-gray-700">This is a Nesting Doll. Click it to find out what's inside!</div>
+            </div>
+        </section>
+
+        <section id="quarks" class="scroll-mt-20">
+             <h2 class="text-3xl font-bold text-center mb-2 text-gray-800">Meet the Main Building Blocks</h2>
+             <p class="text-lg text-gray-600 text-center max-w-3xl mx-auto mb-12">Protons and neutrons are built from two main types of quarks. Each has a different electrical charge.</p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-8 rounded-xl shadow-md text-center border border-gray-200 quark-card">
+                    <div class="w-24 h-24 mx-auto rounded-full bg-blue-100 flex items-center justify-center text-5xl font-bold text-blue-600 mb-4">+</div>
+                    <h3 class="text-2xl font-bold mb-2">Up Quark</h3>
+                    <p class="text-gray-600">The Up quark has a positive electrical charge. Think 'up' like a thumbs-up for positivity!</p>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-md text-center border border-gray-200 quark-card">
+                    <div class="w-24 h-24 mx-auto rounded-full bg-red-100 flex items-center justify-center text-5xl font-bold text-red-600 mb-4">-</div>
+                    <h3 class="text-2xl font-bold mb-2">Down Quark</h3>
+                    <p class="text-gray-600">The Down quark has a negative electrical charge. It's the opposite of the Up quark.</p>
+                </div>
+            </div>
+            <div class="text-center mt-12">
+                <button id="toggle-family-btn" class="bg-gray-200 text-gray-800 font-semibold py-2 px-6 rounded-lg hover:bg-gray-300 transition-colors">Did you know there's a whole family?</button>
+                <div id="quark-family" class="hidden-content mt-8 max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md border">
+                    <h4 class="font-bold text-xl mb-4">The Quark Family</h4>
+                    <p class="text-gray-600">Besides Up and Down, there are four other types (or "flavors") of quarks, but they are much rarer and heavier. Their names are <span class="font-semibold">Charm</span>, <span class="font-semibold">Strange</span>, <span class="font-semibold">Top</span>, and <span class="font-semibold">Bottom</span>. For now, we only need Up and Down to build almost everything in the universe!</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="builder" class="scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-2 text-gray-800">Build a Particle!</h2>
+            <p class="text-lg text-gray-600 text-center max-w-3xl mx-auto mb-12">Now it's your turn to be a physicist! Drag and drop quarks from the palette into the build zone to create your own particles. Follow the recipes to build a proton and a neutron.</p>
+            
+            <div class="lg:grid lg:grid-cols-3 lg:gap-8">
+                <div class="lg:col-span-1 mb-8 lg:mb-0">
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                        <h3 class="text-xl font-bold text-center mb-4">Quark Palette</h3>
+                        <p class="text-sm text-gray-500 text-center mb-6">Drag these quarks</p>
+                        <div class="flex justify-around">
+                            <div class="builder-quark text-center" draggable="true" data-type="up">
+                                <div class="w-20 h-20 mx-auto rounded-full bg-blue-100 flex items-center justify-center text-4xl font-bold text-blue-600 shadow-sm">+</div>
+                                <p class="mt-2 font-semibold">Up</p>
+                            </div>
+                            <div class="builder-quark text-center" draggable="true" data-type="down">
+                                <div class="w-20 h-20 mx-auto rounded-full bg-red-100 flex items-center justify-center text-4xl font-bold text-red-600 shadow-sm">-</div>
+                                <p class="mt-2 font-semibold">Down</p>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="bg-white mt-8 p-6 rounded-xl shadow-lg border border-gray-200">
+                        <h3 class="text-xl font-bold text-center mb-4">Recipes</h3>
+                         <div class="space-y-4">
+                            <p><span class="font-bold">Proton:</span> 2 Up Quarks, 1 Down Quark</p>
+                            <p><span class="font-bold">Neutron:</span> 1 Up Quark, 2 Down Quarks</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2">
+                    <div class="bg-gray-50 p-6 rounded-xl shadow-inner border">
+                        <h3 class="text-xl font-bold text-center mb-4 text-gray-700">Build Zone</h3>
+                        <div id="drop-zone" class="drop-zone min-h-[200px] bg-gray-200 rounded-lg border-2 border-dashed border-gray-400 flex items-center justify-center p-4 flex-wrap gap-4">
+                            <span id="drop-prompt" class="text-gray-500">Drop quarks here!</span>
+                        </div>
+                        <div class="text-center mt-4">
+                            <button id="reset-builder-btn" class="bg-gray-800 text-white font-semibold py-2 px-6 rounded-lg hover:bg-gray-700 transition-colors">Reset</button>
+                        </div>
+                        <div id="builder-result" class="mt-6 p-4 bg-white rounded-lg shadow-md text-center min-h-[80px] flex flex-col items-center justify-center">
+                            <p class="text-gray-700 font-semibold">Your result will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="quiz" class="scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-2 text-gray-800">Check Your Knowledge</h2>
+            <p class="text-lg text-gray-600 text-center max-w-3xl mx-auto mb-12">Let's see what you've learned. Answer these quick questions.</p>
+            <div class="max-w-2xl mx-auto space-y-8">
+                <div class="bg-white p-6 rounded-xl shadow-md border">
+                    <p class="font-semibold text-lg mb-4">1. What are protons and neutrons made of?</p>
+                    <div class="space-y-3 quiz-options" data-correct="1">
+                        <button class="quiz-option w-full text-left p-3 bg-gray-100 rounded-lg hover:bg-gray-200">Quarks</button>
+                        <button class="quiz-option w-full text-left p-3 bg-gray-100 rounded-lg hover:bg-gray-200">Electrons</button>
+                        <button class="quiz-option w-full text-left p-3 bg-gray-100 rounded-lg hover:bg-gray-200">Atoms</button>
+                    </div>
+                    <div class="quiz-feedback mt-3 text-sm font-semibold"></div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-md border">
+                    <p class="font-semibold text-lg mb-4">2. How many 'Up' quarks are in a Proton?</p>
+                    <div class="space-y-3 quiz-options" data-correct="2">
+                        <button class="quiz-option w-full text-left p-3 bg-gray-100 rounded-lg hover:bg-gray-200">One</button>
+                        <button class="quiz-option w-full text-left p-3 bg-gray-100 rounded-lg hover:bg-gray-200">Two</button>
+                        <button class="quiz-option w-full text-left p-3 bg-gray-100 rounded-lg hover:bg-gray-200">Three</button>
+                    </div>
+                    <div class="quiz-feedback mt-3 text-sm font-semibold"></div>
+                </div>
+                
+                 <div class="bg-white p-6 rounded-xl shadow-md border">
+                    <p class="font-semibold text-lg mb-4">3. What particle acts like "glue" to hold quarks together?</p>
+                    <div class="space-y-3 quiz-options" data-correct="3">
+                        <button class="quiz-option w-full text-left p-3 bg-gray-100 rounded-lg hover:bg-gray-200">Tapeon</button>
+                        <button class="quiz-option w-full text-left p-3 bg-gray-100 rounded-lg hover:bg-gray-200">Stickyon</button>
+                        <button class="quiz-option w-full text-left p-3 bg-gray-100 rounded-lg hover:bg-gray-200">Gluon</button>
+                    </div>
+                    <div class="quiz-feedback mt-3 text-sm font-semibold"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="assignment" class="scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-2 text-gray-800">Your Assignment</h2>
+            <p class="text-lg text-gray-600 text-center max-w-3xl mx-auto mb-12">Now that you've learned the basics, it's time to find out where quarks are important in the real world.</p>
+            <div class="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow-md border">
+                <h3 class="text-xl font-bold mb-4">Task: Research and Write a Short Report</h3>
+                <p class="text-gray-700 mb-4">Your mission is to research an item or technology that relies on our understanding of quarks. Here are some ideas to get you started, but feel free to find your own!  </p>
+                <ul class="list-disc list-inside space-y-2 text-gray-600">
+                    <li>Particle Accelerators (like the Large Hadron Collider)</li>
+                    <li>Neutron Stars</li>
+                    <li>The Big Bang Theory</li>
+                </ul>
+                <div class="mt-8 p-4 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                    <p class="font-semibold text-gray-800 mb-2">Your report should include:</p>
+                    <ul class="list-disc list-inside space-y-1 text-gray-700 text-sm">
+                        <li>The name of the item or technology.</li>
+                        <li>A short summary of what it is.</li>
+                        <li>An explanation of how quarks and the strong force are involved.</li>
+                        <li>At least one interesting fact you discovered during your research.</li>
+                    </ul>
+                </div>
+                <p class="mt-6 text-gray-500 text-sm">Submit your report to your instructor.</p>
+            </div>
+        </section>
+
+    </main>
+    
+    <footer class="text-center py-8 mt-16 border-t">
+        <p class="text-gray-500">Interactive Quark Lesson | A simplified model for learning.</p>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const dollContainer = document.getElementById('doll-container');
+    const dollImage = document.getElementById('doll-image');
+    const dollCaption = document.getElementById('doll-caption');
+
+    const dollStates = [
+        { src: 'https://placehold.co/320x480/A8DADC/1D3557?text=Nesting+Doll', caption: 'This is a Nesting Doll. Click it to find out what\'s inside!' },
+        { src: 'https://placehold.co/320x480/457B9D/F1FAEE?text=Atom', caption: 'The first doll is an Atom.' },
+        { src: 'https://placehold.co/320x480/1D3557/F1FAEE?text=Proton+and+Neutron', caption: 'Inside the Atom\'s nucleus are protons and neutrons.' },
+        { src: 'https://placehold.co/320x480/E63946/F1FAEE?text=Quarks!', caption: 'And inside them are Quarks! The tiniest building blocks.' }
+    ];
+    let currentDollState = 0;
+
+    dollContainer.addEventListener('click', () => {
+        currentDollState = (currentDollState + 1) % dollStates.length;
+        dollImage.src = dollStates[currentDollState].src;
+        dollImage.alt = dollStates[currentDollState].caption;
+        dollCaption.textContent = dollStates[currentDollState].caption;
+    });
+
+    const toggleFamilyBtn = document.getElementById('toggle-family-btn');
+    const quarkFamily = document.getElementById('quark-family');
+
+    toggleFamilyBtn.addEventListener('click', () => {
+        const isHidden = quarkFamily.classList.contains('hidden-content');
+        if(isHidden) {
+            quarkFamily.classList.remove('hidden-content');
+            setTimeout(() => quarkFamily.classList.add('visible-content'), 10);
+            toggleFamilyBtn.textContent = 'Hide the family';
+        } else {
+            quarkFamily.classList.remove('visible-content');
+             setTimeout(() => quarkFamily.classList.add('hidden-content'), 500);
+            toggleFamilyBtn.textContent = 'Did you know there\'s a whole family?';
+        }
+    });
+
+    const builderQuarks = document.querySelectorAll('.builder-quark');
+    const dropZone = document.getElementById('drop-zone');
+    const resultDisplay = document.getElementById('builder-result');
+    const resetBuilderBtn = document.getElementById('reset-builder-btn');
+    const dropPrompt = document.getElementById('drop-prompt');
+
+    let droppedQuarks = [];
+
+    builderQuarks.forEach(quark => {
+        quark.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', quark.dataset.type);
+            setTimeout(() => quark.classList.add('opacity-50'), 0);
+        });
+        quark.addEventListener('dragend', () => {
+            quark.classList.remove('opacity-50');
+        });
+    });
+
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('drop-zone-active');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('drop-zone-active');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('drop-zone-active');
+        const quarkType = e.dataTransfer.getData('text/plain');
+        if (droppedQuarks.length < 3) {
+            droppedQuarks.push(quarkType);
+            renderDroppedQuarks();
+            checkCombination();
+        }
+    });
+
+    function renderDroppedQuarks() {
+        dropZone.innerHTML = '';
+        if (droppedQuarks.length > 0) {
+            dropPrompt.style.display = 'none';
+        } else {
+            dropZone.innerHTML = '<span id="drop-prompt" class="text-gray-500">Drop quarks here!</span>';
+        }
+
+        droppedQuarks.forEach(type => {
+            const quarkEl = document.createElement('div');
+            quarkEl.className = 'w-20 h-20 rounded-full flex items-center justify-center text-4xl font-bold shadow-sm';
+            if (type === 'up') {
+                quarkEl.classList.add('bg-blue-100', 'text-blue-600');
+                quarkEl.textContent = '+';
+            } else {
+                quarkEl.classList.add('bg-red-100', 'text-red-600');
+                quarkEl.textContent = '-';
+            }
+            dropZone.appendChild(quarkEl);
+        });
+    }
+    
+    function checkCombination() {
+        if (droppedQuarks.length < 3) {
+            resultDisplay.innerHTML = '<p class="text-gray-700 font-semibold">Keep adding quarks...</p>';
+            return;
+        }
+
+        const upCount = droppedQuarks.filter(q => q === 'up').length;
+        const downCount = droppedQuarks.filter(q => q === 'down').length;
+
+        resultDisplay.innerHTML = ''; 
+        const resultText = document.createElement('p');
+        resultText.className = 'text-xl font-bold';
+
+        if (upCount === 2 && downCount === 1) {
+            resultText.textContent = '🎉 You made a Proton!';
+            resultText.classList.add('text-green-700');
+            resultDisplay.appendChild(resultText);
+            const explanation = document.createElement('p');
+            explanation.className = 'text-sm text-gray-600 mt-1';
+            explanation.textContent = 'Protons are what give the atom\'s nucleus its positive charge. Gluons are now holding it together!';
+            resultDisplay.appendChild(explanation);
+            dropZone.childNodes.forEach(child => child.classList.add('gluon-effect'));
+
+        } else if (upCount === 1 && downCount === 2) {
+            resultText.textContent = '🎉 You made a Neutron!';
+            resultText.classList.add('text-green-700');
+            resultDisplay.appendChild(resultText);
+            const explanation = document.createElement('p');
+            explanation.className = 'text-sm text-gray-600 mt-1';
+            explanation.textContent = 'Neutrons have no charge and help keep the nucleus stable. Gluons are now holding it together!';
+            resultDisplay.appendChild(explanation);
+            dropZone.childNodes.forEach(child => child.classList.add('gluon-effect'));
+        } else {
+            resultText.textContent = '🤔 Not quite a stable particle.';
+            resultText.classList.add('text-orange-700');
+            resultDisplay.appendChild(resultText);
+            const explanation = document.createElement('p');
+            explanation.className = 'text-sm text-gray-600 mt-1';
+            explanation.textContent = 'Try one of the recipes!';
+            resultDisplay.appendChild(explanation);
+        }
+    }
+
+    resetBuilderBtn.addEventListener('click', () => {
+        droppedQuarks = [];
+        renderDroppedQuarks();
+        resultDisplay.innerHTML = '<p class="text-gray-700 font-semibold">Your result will appear here.</p>';
+    });
+
+    const quizContainers = document.querySelectorAll('.quiz-options');
+    quizContainers.forEach((container, index) => {
+        const options = container.querySelectorAll('.quiz-option');
+        const feedbackEl = container.nextElementSibling;
+        const correctIndex = parseInt(container.dataset.correct) -1;
+
+        options.forEach((option, optionIndex) => {
+            option.addEventListener('click', () => {
+                options.forEach(btn => {
+                    btn.disabled = true;
+                    btn.classList.remove('hover:bg-gray-200');
+                    btn.classList.add('bg-gray-100');
+                });
+
+                if (optionIndex === correctIndex) {
+                    option.classList.remove('bg-gray-100');
+                    option.classList.add('bg-green-200', 'text-green-800');
+                    feedbackEl.textContent = 'Correct!';
+                    feedbackEl.className = 'quiz-feedback mt-3 text-sm font-semibold feedback-correct';
+                } else {
+                    option.classList.remove('bg-gray-100');
+                    option.classList.add('bg-red-200', 'text-red-800');
+                    options[correctIndex].classList.add('bg-green-200', 'text-green-800');
+                    feedbackEl.textContent = 'Not quite. The correct answer is highlighted.';
+                    feedbackEl.className = 'quiz-feedback mt-3 text-sm font-semibold feedback-incorrect';
+                }
+            });
+        });
+    });
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+});
+</script>
+</body>
+</html>
