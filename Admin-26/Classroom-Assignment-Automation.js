@@ -2,20 +2,40 @@ function testCreateClassroomAssignment() {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   const data = sheet.getDataRange().getValues();
 
+  // Get today's date and normalize it to midnight for accurate comparison
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
   // Loop through rows (skipping the header at row 0)
   for (let i = 1; i < data.length; i++) {
     const row = data[i];
-    const title = row[0];            // Col A
-    const description = row[1];      // Col B
-    const courseId = String(row[2]).trim(); // Col C
-    const dueDateString = row[3];    // Col D
-    const rawPoints = row[4];        // Col E 
-    const topicName = row[5];        // Col F 
+    const postDateRaw = row[0];      // Col A (NEW)
+    const title = row[1];            // Col B
+    const description = row[2];      // Col C
+    const courseId = String(row[3]).trim(); // Col D
+    const dueDateString = row[4];    // Col E
+    const rawPoints = row[5];        // Col F 
+    const topicName = row[6];        // Col G 
     const materialUrl = String(row[7]).trim(); // Col H 
     const status = row[8];           // Col I 
 
+    // Determine if it's time to post based on the Post Date column
+    let isReadyToPost = false;
+    if (postDateRaw) {
+      const postDate = new Date(postDateRaw);
+      postDate.setHours(0, 0, 0, 0);
+      
+      // If the post date is today or earlier, it's ready
+      if (postDate.getTime() <= today.getTime()) {
+        isReadyToPost = true;
+      }
+    } else {
+      // If you leave the Post Date blank, it assumes you want it posted immediately
+      isReadyToPost = true; 
+    }
+
     // Check if the row is meant to be processed
-    if (status === "PENDING" && courseId && courseId !== "ENTER_YOUR_COURSE_ID_HERE") {
+    if (status === "PENDING" && isReadyToPost && courseId && courseId !== "ENTER_YOUR_COURSE_ID_HERE") {
       
       try {
         const assignmentDetails = {
@@ -58,15 +78,13 @@ function testCreateClassroomAssignment() {
           }
         }
 
-        // --- NEW: Handle Material URL & Drive Permissions ---
+        // Handle Material URL & Drive Permissions
         if (materialUrl) {
           const driveIdMatch = materialUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
           
           if (driveIdMatch && driveIdMatch[1]) {
             const fileId = driveIdMatch[1];
             
-            // MAGIC TRICK: This forces Apps Script to request Drive permissions
-            // and acts as a safety check to ensure you actually have access.
             try {
               DriveApp.getFileById(fileId);
             } catch (e) {
@@ -80,13 +98,11 @@ function testCreateClassroomAssignment() {
               }
             }];
           } else {
-            // It's a regular website, PDF link, or YouTube video.
             assignmentDetails.materials = [{
               link: { url: materialUrl }
             }];
           }
         }
-        // ------------------------------------------------------------------
 
         // Push the fully compiled payload to Google Classroom
         Classroom.Courses.CourseWork.create(assignmentDetails, courseId);
