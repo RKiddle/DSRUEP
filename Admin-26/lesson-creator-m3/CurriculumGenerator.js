@@ -10,7 +10,7 @@
  */
 function runCurriculumGenerator() {
   // Replace with the ID of the M3 Science chapter PDF in your Drive
-  const pdfFileId = '1JrIz0zLIJMrxaN5eaUcZgjdvwtnKlXN6'; 
+  const pdfFileId = 'FILE ID'; 
   
   Logger.log("Starting pipeline for PDF ID: " + pdfFileId);
   buildClassroomAssets(pdfFileId);
