@@ -41,7 +41,9 @@ function generateScienceLessonsFromLessonInput(lessonInput, apiKey) {
     throw new Error('A valid Gemini API key is required.');
   }
 
-  const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=' + encodeURIComponent(apiKey);
+  const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + encodeURIComponent(apiKey);
+
+ 
   const lessonInputJson = JSON.stringify(lessonInput);
 
   const payload = {
@@ -395,8 +397,17 @@ function extractGeminiTextCandidate(response) {
  * Debug helper.
  */
 function testGenerateScienceLessonsFromPdf() {
-  const pdfFileId = 'REPLACE_WITH_REAL_FILE_ID';
-  const apiKey = 'REPLACE_WITH_GEMINI_API_KEY';
+  const pdfFileId = '1JrIz0zLIJMrxaN5eaUcZgjdvwtnKlXN6'; // Put your actual PDF Doc ID here
+  
+  // Securely fetch the API key from Script Properties
+  const apiKey = PropertiesService.getScriptProperties().getProperty('GEMINI_API_KEY');
+  
+  // Optional: Add a quick safety check so the script warns you if it can't find the key
+  if (!apiKey) {
+    Logger.log("ERROR: Could not find GEMINI_API_KEY in Script Properties. Please check Project Settings.");
+    return;
+  }
+
   const result = generateScienceLessonsFromPdf(pdfFileId, apiKey);
   Logger.log(JSON.stringify(result, null, 2));
 }
