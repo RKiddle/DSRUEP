@@ -397,7 +397,7 @@ function extractGeminiTextCandidate(response) {
  * Debug helper.
  */
 function testGenerateScienceLessonsFromPdf() {
-  const pdfFileId = '1JrIz0zLIJMrxaN5eaUcZgjdvwtnKlXN6'; // Put your actual PDF Doc ID here
+  const pdfFileId = 'FILE ID'; // Put your actual PDF Doc ID here
   
   // Securely fetch the API key from Script Properties
   const apiKey = PropertiesService.getScriptProperties().getProperty('GEMINI_API_KEY');
